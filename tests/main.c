@@ -50,6 +50,25 @@ START_TEST(test_call_times) {
     ck_assert_int_eq(2, CALL_TIMES(func));
 }
 END_TEST
+
+static bool side_effect_invoked = false;
+static void side_effect(void)
+{
+    side_effect_invoked = true;
+}
+START_TEST(test_set_side_effect) {
+    SET_SIDE_EFFECT_OF(func, side_effect);
+    func(1, 2);
+    ck_assert(side_effect_invoked);
+}
+END_TEST
+START_TEST(test_call_with_args) {
+    func(10, 20);
+    ck_assert(CALL_WITH_ARGS(func, 10, 20));
+    ck_assert(!CALL_WITH_ARGS(func, 20, 30));
+    // ck_assert(CALL_WITH_ARGS(20)); <----- compile error
+}
+END_TEST
 Suite * make_sub_suite(void) {
     Suite *s = suite_create("stub testing");       // 建立Suite
     TCase *tc_sub = tcase_create("test function stubs");  // 建立测试用例集
@@ -58,6 +77,8 @@ Suite * make_sub_suite(void) {
     tcase_add_test(tc_sub, test_stub_restore);
     tcase_add_test(tc_sub, test_extract_args);
     tcase_add_test(tc_sub, test_call_times);
+    tcase_add_test(tc_sub, test_set_side_effect);
+    tcase_add_test(tc_sub, test_call_with_args);
 
     return s;
 }
