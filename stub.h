@@ -5,13 +5,9 @@
 #include <string.h>
 #include <stdarg.h>
 
-struct stub_obj_data {
-    bool called;
-    unsigned char return_buffer[16];
-};
 struct stub_obj {
-    struct stub_obj_data data;
     bool called;
+    int call_times;
     unsigned char return_buffer[16];
 };
 
@@ -42,7 +38,7 @@ struct stub_obj {
         STRUCT_ARGS(arg_nr, __VA_ARGS__)\
     };\
     struct name##_stub_obj { \
-        struct stub_obj common; \
+        struct stub_obj common_data; \
         struct __args { \
             STRUCT_ARGS(arg_nr, __VA_ARGS__); \
         } args;\
@@ -67,6 +63,7 @@ struct stub_obj {
     {\
         struct stub_obj* pobj = (struct stub_obj*)(&name##_stub_obj); \
         name##_record(arg_nr, ACTUAL_ARGS##arg_nr); \
+        pobj->call_times ++; \
         return_type result = *(return_type*)(pobj->return_buffer); \
         return result; \
     }
@@ -79,4 +76,6 @@ struct stub_obj {
     name##_returns(value);
 
 #define RESTORE(name) name##_restore()
+#define CALLED(name) name##_stub_obj.common_data.called
+#define CALL_TIMES(name) name##_stub_obj.common_data.call_times
 #endif

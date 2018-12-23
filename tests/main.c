@@ -13,17 +13,17 @@ DEFINE_FUNCTION_STUB(func, int, 2, int, char);
 START_TEST(test_stub_called) {
     struct stub_obj* func_stub = STUB(func);
     func(0, 0);
-    ck_assert(func_stub->called);
+    ck_assert(CALLED(func));
 }
 END_TEST
 START_TEST(test_stub_restore) {
     struct stub_obj* func_stub = STUB(func);
     func(0, 0);
     RESTORE(func);
-    ck_assert(!func_stub->called);
+    ck_assert(!CALLED(func));
     func(0, 0);
     RESTORE(func);
-    ck_assert(!func_stub->called);
+    ck_assert(!CALLED(func));
 }
 END_TEST
 START_TEST(test_extract_args) {
@@ -41,7 +41,15 @@ START_TEST(test_returns) {
 }
 END_TEST
 
-#define A(a) a
+START_TEST(test_call_times) {
+    struct stub_obj* func_stub = STUB(func);
+    func(1,2);
+    ck_assert_int_eq(1, CALL_TIMES(func));
+
+    func(2,3);
+    ck_assert_int_eq(2, CALL_TIMES(func));
+}
+END_TEST
 Suite * make_sub_suite(void) {
     Suite *s = suite_create("stub testing");       // 建立Suite
     TCase *tc_sub = tcase_create("test function stubs");  // 建立测试用例集
@@ -49,6 +57,7 @@ Suite * make_sub_suite(void) {
     tcase_add_test(tc_sub, test_stub_called);
     tcase_add_test(tc_sub, test_stub_restore);
     tcase_add_test(tc_sub, test_extract_args);
+    tcase_add_test(tc_sub, test_call_times);
 
     return s;
 }
