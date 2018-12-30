@@ -8,6 +8,7 @@
 
 #include "helper_macros.h"
 
+#define VERSION     "v1.0"
 struct stub_obj {
     bool called;
     int call_times;
