@@ -7,6 +7,16 @@ A stub library for unit testing in pure C code. With `libstub` you can easily cr
 
 Because of the language limitation of pure  `C`, it's not so semantic to do with mock. So `libstub` only focus in stubbing. No mocking but a little bit faking. If you are confusing with the terminology outline here (they are always mentioned as 'test doubles'), just google it. And it might be very helpful to look at googletest offical page.
 
+## How to use it
+
+It's very easy to include libstub in you own project. The only thing you need is to include 1 header file. Use this. Make sure `libstub` is in your include directory.
+
+```c
+#include "stub.h"
+```
+
+
+
 ## Feature List
 
 `libstub` supports:
