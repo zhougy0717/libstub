@@ -17,85 +17,67 @@ struct stub_obj {
 #define LAST_CALL_ARGS(name) \
     name##_stub_obj.args[name##_stub_obj.common_data.call_times % MAX_CALL_TIMES]
 
-#define FORMAL_ARGS0()
-#define FORMAL_ARGS1(a) a arg1
-#define FORMAL_ARGS2(a, b) \
-    FORMAL_ARGS1(a), b arg2
-#define FORMAL_ARGS3(a, b, c) \
-    FORMAL_ARGS2(a, b), c arg3
-#define FORMAL_ARGS4(a, b, c, d) \
-    FORMAL_ARGS3(a, b, c), d arg4
-#define FORMAL_ARGS5(a, b, c, d, e) \
-    FORMAL_ARGS4(a, b, c, d), e arg5
-#define FORMAL_ARGS6(a, b, c, d, e, f) \
-    FORMAL_ARGS5(a, b, c, d, e), f arg6
-#define FORMAL_ARGS(n, ...) FORMAL_ARGS##n(__VA_ARGS__)
+#define LAST1(a, ...) a
+#define LAST2(a, ...) LAST1(__VA_ARGS__)
+#define LAST3(a, ...) LAST2(__VA_ARGS__)
+#define LAST4(a, ...) LAST3(__VA_ARGS__)
+#define LAST5(a, ...) LAST4(__VA_ARGS__)
+#define LAST6(a, ...) LAST5(__VA_ARGS__)
 
-#define ACTUAL_ARGS0
-#define ACTUAL_ARGS1 arg1
-#define ACTUAL_ARGS2 ACTUAL_ARGS1, arg2
-#define ACTUAL_ARGS3 ACTUAL_ARGS2, arg3
-#define ACTUAL_ARGS4 ACTUAL_ARGS3, arg4
-#define ACTUAL_ARGS5 ACTUAL_ARGS4, arg5
-#define ACTUAL_ARGS6 ACTUAL_ARGS5, arg6
+#define FIRST1(a, ...)                  a
+#define FIRST2(a, b, ...)               a, b
+#define FIRST3(a, b, c, ...)            a, b, c
+#define FIRST4(a, b, c, d, ...)         a, b, c, d
+#define FIRST5(a, b, c, d, e, ...)      a, b, c, d, e
+#define FIRST6(a, b, c, d, e, f, ...)   a, b, c, d, e, f
 
-#define STRUCT_ARGS0() int place_holder;
-#define STRUCT_ARGS1(a) a arg1;
-#define STRUCT_ARGS2(a, b) \
-    STRUCT_ARGS1(a); \
-    b arg2;
-#define STRUCT_ARGS3(a, b, c) \
-    STRUCT_ARGS2(a, b); \
-    c arg3;
-#define STRUCT_ARGS4(a, b, c, d) \
-    STRUCT_ARGS3(a, b, c); \
-    d arg4;
-#define STRUCT_ARGS5(a, b, c, d, e) \
-    STRUCT_ARGS4(a, b, c, d); \
-    e arg5;
-#define STRUCT_ARGS6(a, b, c, d, e, f) \
-    STRUCT_ARGS5(a, b, c, d, e); \
-    f arg6;
-#define STRUCT_ARGS(arg_nr, ...) \
-    STRUCT_ARGS##arg_nr(__VA_ARGS__)
+#define FOR_EACH0(MAKE, MAKE0, MAKE1, ...) \
+    MAKE0()
+#define FOR_EACH1(MAKE, MAKE0, MAKE1, a, ...) \
+    MAKE1(a)
+#define FOR_EACH2(MAKE, MAKE0, MAKE1, ...) \
+    FOR_EACH1(MAKE, MAKE0, MAKE1, FIRST1(__VA_ARGS__)) MAKE(LAST2(__VA_ARGS__), 2)
+#define FOR_EACH3(MAKE, MAKE0, MAKE1, ...) \
+    FOR_EACH2(MAKE, MAKE0, MAKE1, FIRST2(__VA_ARGS__)) MAKE(LAST3(__VA_ARGS__), 3)
+#define FOR_EACH4(MAKE, MAKE0, MAKE1, ...) \
+    FOR_EACH3(MAKE, MAKE0, MAKE1, FIRST3(__VA_ARGS__)) MAKE(LAST4(__VA_ARGS__), 4)
+#define FOR_EACH5(MAKE, MAKE0, MAKE1, ...) \
+    FOR_EACH4(MAKE, MAKE0, MAKE1, FIRST4(__VA_ARGS__)) MAKE(LAST5(__VA_ARGS__), 5)
+#define FOR_EACH6(MAKE, MAKE0, MAKE1, ...) \
+    FOR_EACH5(MAKE, MAKE0, MAKE1, FIRST5(__VA_ARGS__)) MAKE(LAST6(__VA_ARGS__), 6)
+#define FOR_EACH(nr, MAKE, MAKE0, ...) FOR_EACH##nr(MAKE, MAKE0, __VA_ARGS__)
 
-#define SAVE_ARG0(p)
-#define SAVE_ARG1(p) p.arg1 = arg1;
-#define SAVE_ARG2(p) \
-    p.arg2 = arg2; \
-    SAVE_ARG1(p)
-#define SAVE_ARG3(p) \
-    p.arg3 = arg3; \
-    SAVE_ARG2(p)
-#define SAVE_ARG4(p) \
-    p.arg4 = arg4; \
-    SAVE_ARG3(p)
-#define SAVE_ARG5(p) \
-    p.arg5 = arg5; \
-    SAVE_ARG4(p)
-#define SAVE_ARG6(p) \
-    p.arg6 = arg6; \
-    SAVE_ARG5(p)
-#define SAVE_ARG(p, n) SAVE_ARG##n(p)
+#define MAKE_FORMAL_ARG0()          void
+#define MAKE_FORMAL_ARG1(a)         a arg1
+#define MAKE_FORMAL_ARG(a, n)       ,a arg##n
 
-#define VERIFY_ARG0(p) true
-#define VERIFY_ARG1(p) (p.arg1 == arg1)
-#define VERIFY_ARG2(p) \
-    (p.arg2 == arg2) || \
-    VERIFY_ARG1(p)
-#define VERIFY_ARG3(p) \
-    (p.arg3 == arg3) || \
-    VERIFY_ARG2(p)
-#define VERIFY_ARG4(p) \
-    (p.arg4 == arg4) || \
-    VERIFY_ARG3(p)
-#define VERIFY_ARG5(p) \
-    (p.arg5 == arg5) || \
-    VERIFY_ARG4(p)
-#define VERIFY_ARG6(p) \
-    (p.arg6 == arg6) || \
-    VERIFY_ARG5(p)
-#define VERIFY_ARGS(p, n) VERIFY_ARG##n(p)
+#define MAKE_ACTUAL_ARG0()
+#define MAKE_ACTUAL_ARG1(a)         arg1
+#define MAKE_ACTUAL_ARG(a, n)       ,arg##n
+
+#define MAKE_STRUCT_ARG0()          int place_holder;
+#define MAKE_STRUCT_ARG1(a)         a arg1;
+#define MAKE_STRUCT_ARG(a, n)       a arg##n;
+
+#define MAKE_SAVE_ARG0(a)
+#define MAKE_SAVE_ARG1(a)           pargs->arg1 = arg1;
+#define MAKE_SAVE_ARG(a, n)         pargs->arg##n = arg##n;
+
+#define MAKE_VERIFY_ARG0(a)         true
+#define MAKE_VERIFY_ARG1(a)         (pargs->arg1 == arg1)
+#define MAKE_VERIFY_ARG(a, n)       && (pargs->arg##n = arg##n)
+
+#define FORMAL_ARGS(nr, ...) \
+    FOR_EACH##nr(MAKE_FORMAL_ARG, MAKE_FORMAL_ARG0, MAKE_FORMAL_ARG1, __VA_ARGS__)
+#define ACTUAL_ARGS(nr, ...) \
+    FOR_EACH##nr(MAKE_ACTUAL_ARG, MAKE_ACTUAL_ARG0, MAKE_ACTUAL_ARG1, __VA_ARGS__)
+#define STRUCT_ARGS(nr, ...) \
+    FOR_EACH##nr(MAKE_STRUCT_ARG, MAKE_STRUCT_ARG0, MAKE_STRUCT_ARG1, __VA_ARGS__)
+#define SAVE_ARGS(nr, name, ...) \
+    FOR_EACH##nr(MAKE_SAVE_ARG, MAKE_SAVE_ARG0, MAKE_SAVE_ARG1, __VA_ARGS__)
+#define VERIFY_ARGS(nr, name, ...) \
+    FOR_EACH##nr(MAKE_VERIFY_ARG, MAKE_VERIFY_ARG0, MAKE_VERIFY_ARG1, __VA_ARGS__)
+
 
 #define DEFINE_FUNCTION_STUB_CORE(name, return_type, arg_nr, ...) \
     struct name##_args { \
@@ -103,15 +85,15 @@ struct stub_obj {
     };\
     struct name##_stub_obj { \
         struct stub_obj common_data; \
-        struct { \
-            STRUCT_ARGS(arg_nr, __VA_ARGS__); \
-        } args[MAX_CALL_TIMES];\
+        struct name##_args args[MAX_CALL_TIMES];\
     } name##_stub_obj; \
     static void name##_record(FORMAL_ARGS(arg_nr, __VA_ARGS__))\
     { \
         struct stub_obj* pobj = (struct stub_obj*)(&name##_stub_obj); \
         pobj->called = true; \
-        SAVE_ARG(LAST_CALL_ARGS(name), arg_nr); \
+        int call_times = name##_stub_obj.common_data.call_times; \
+        struct name##_args* pargs = &name##_stub_obj.args[call_times % MAX_CALL_TIMES]; \
+        SAVE_ARGS(arg_nr, __VA_ARGS__); \
     }\
     static void name##_restore(void) \
     { \
@@ -120,7 +102,9 @@ struct stub_obj {
     } \
     static bool name##_verify_args(FORMAL_ARGS(arg_nr, __VA_ARGS__)) \
     {\
-        return VERIFY_ARGS(LAST_CALL_ARGS(name), arg_nr); \
+        int call_times = name##_stub_obj.common_data.call_times; \
+        struct name##_args* pargs = &name##_stub_obj.args[call_times % MAX_CALL_TIMES]; \
+        return VERIFY_ARGS(arg_nr, __VA_ARGS__); \
     }
 
 #define DEFINE_FUNCTION_STUB(name, return_type, arg_nr, ...) \
@@ -134,13 +118,12 @@ struct stub_obj {
     {\
         struct stub_obj* pobj = (struct stub_obj*)(&name##_stub_obj); \
         pobj->call_times ++; \
-        name##_record(ACTUAL_ARGS##arg_nr); \
-        return_type result = *(return_type*)(pobj->return_buffer); \
+        name##_record(ACTUAL_ARGS(arg_nr, __VA_ARGS__)); \
         if (pobj->side_effect != NULL) \
         { \
             pobj->side_effect(); \
         } \
-        return result; \
+        return (return_type)(*(return_type*)(pobj->return_buffer)); \
     }
 
 #define DEFINE_FUNCTION_STUB_NO_RETURN(name, return_type, arg_nr, ...) \
@@ -149,14 +132,15 @@ struct stub_obj {
     {\
         struct stub_obj* pobj = (struct stub_obj*)(&name##_stub_obj); \
         pobj->call_times ++; \
-        name##_record(ACTUAL_ARGS##arg_nr); \
+        name##_record(ACTUAL_ARGS(arg_nr, __VA_ARGS__)); \
         if (pobj->side_effect != NULL) \
         { \
             pobj->side_effect(); \
         } \
     }
 
-#define FETCH_ARG_OF(name, idx) LAST_CALL_ARGS(name).arg##idx
+#define FETCH_ARG_OF(name, idx) \
+    name##_stub_obj.args[name##_stub_obj.common_data.call_times % MAX_CALL_TIMES].arg##idx
 
 #define SET_RETURN_OF(name, value) name##_returns(value);
 
@@ -171,5 +155,9 @@ struct stub_obj {
         name##_stub_obj.args[call % MAX_CALL_TIMES].arg##idx; \
     }
 #define VERIFY_POINTER_ARG(compare, name, idx) \
-    (memcmp(compare, FETCH_ARG_OF(name, idx), sizeof(*(compare))))
+{ \
+    assert(CALLED(name)); \
+    assert(compare != NULL); \
+    memcmp(compare, FETCH_ARG_OF(name, idx), sizeof(*(compare))); \
+}
 #endif
