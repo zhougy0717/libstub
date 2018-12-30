@@ -72,7 +72,6 @@ START_TEST(test_fetch_arg_of_call_time) {
 }
 END_TEST
 
-// libstub only supports to stub a function with up to 6 args.
 DEFINE_FUNCTION_STUB(long_arglist_func, int, 6, int, char, int, int, int, int);
 
 START_TEST(test_long_arg_list) {
@@ -118,6 +117,37 @@ START_TEST(test_verify_void_pointer_arg) {
     ck_assert_int_eq(0, VERIFY_POINTER_ARG(&d, func_with_void_pointer_arg, 1));
 }
 END_TEST
+
+int fake_func(int a, char b)
+{
+    return a+b;
+}
+static int arg_of_fake_func2;
+void fake_func2(int a)
+{
+    arg_of_fake_func2 = a;
+}
+START_TEST(test_set_fake) {
+    SET_FAKE_OF(func, fake_func);
+    ck_assert_int_eq(3, func(1, 2));
+    SET_FAKE_OF(void_func, fake_func2);
+    void_func(9);
+    ck_assert_int_eq(9, arg_of_fake_func2);
+}
+END_TEST
+
+#ifdef MAX_CALL_ARG_LOGS
+#undef MAX_CALL_ARG_LOGS
+#define MAX_CALL_ARG_LOGS 7
+#endif
+DEFINE_FUNCTION_STUB(func_with_more_logs, int, 2, int, char);
+START_TEST(test_customized_call_logs) {
+    for (int i = 0; i < 7; i++) {
+        func_with_more_logs(i + 123, 2);
+    }
+    ck_assert_int_eq(123, FETCH_ARG_FROM_CALL(func_with_more_logs, 1, 1));
+}
+END_TEST
 Suite * make_sub_suite(void) {
     Suite *s = suite_create("stub testing");       // 建立Suite
     TCase *tc_sub = tcase_create("test function stubs");  // 建立测试用例集
@@ -134,6 +164,8 @@ Suite * make_sub_suite(void) {
     tcase_add_test(tc_sub, test_void_func);
     tcase_add_test(tc_sub, test_verify_pointer_arg);
     tcase_add_test(tc_sub, test_verify_void_pointer_arg);
+    tcase_add_test(tc_sub, test_set_fake);
+    tcase_add_test(tc_sub, test_customized_call_logs);
 
     return s;
 }
