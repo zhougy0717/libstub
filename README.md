@@ -152,7 +152,7 @@ func(&to_compare);
 VERIFY_POINTER_ARG(&to_compare, func, 1); // Finally a smile face.
 ```
 
-##Extend the arg list
+## Extend the arg list
 
  `libstub` supports to stub function contains up to 6 args. If you want to stub function having even longer arg list. You should be careful here. 
 
