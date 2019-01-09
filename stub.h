@@ -38,7 +38,7 @@ struct stub_obj {
 
 #define MAKE_VERIFY_ARG0(a)         true
 #define MAKE_VERIFY_ARG1(a)         (pargs->arg1 == arg1)
-#define MAKE_VERIFY_ARG(a, n)       && (pargs->arg##n = arg##n)
+#define MAKE_VERIFY_ARG(a, n)       && (pargs->arg##n == arg##n)
 
 #define FORMAL_ARGS(nr, ...) \
     FOR_EACH##nr(MAKE_FORMAL_ARG, MAKE_FORMAL_ARG0, MAKE_FORMAL_ARG1, __VA_ARGS__)
