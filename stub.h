@@ -33,12 +33,12 @@ struct stub_obj {
 #define MAKE_STRUCT_ARG(a, n)       a arg##n;
 
 #define MAKE_SAVE_ARG0(a)
-#define MAKE_SAVE_ARG1(a)           pargs->arg1 = arg1;
-#define MAKE_SAVE_ARG(a, n)         pargs->arg##n = arg##n;
+#define MAKE_SAVE_ARG1(a)           memcpy(&pargs->arg1, &arg1, sizeof(arg1));
+#define MAKE_SAVE_ARG(a, n)         memcpy(&pargs->arg1, &arg1, sizeof(arg1));pargs->arg##n = arg##n;
 
 #define MAKE_VERIFY_ARG0(a)         true
-#define MAKE_VERIFY_ARG1(a)         (pargs->arg1 == arg1)
-#define MAKE_VERIFY_ARG(a, n)       && (pargs->arg##n = arg##n)
+#define MAKE_VERIFY_ARG1(a)         (0 == memcmp(&pargs->arg1, &arg1, sizeof(arg1)))
+#define MAKE_VERIFY_ARG(a, n)       && (0 == memcmp(&pargs->arg##n, &arg##n, sizeof(arg##n)))
 
 #define FORMAL_ARGS(nr, ...) \
     FOR_EACH##nr(MAKE_FORMAL_ARG, MAKE_FORMAL_ARG0, MAKE_FORMAL_ARG1, __VA_ARGS__)
@@ -55,7 +55,7 @@ struct stub_obj {
     struct name##_args { \
         STRUCT_ARGS(arg_nr, __VA_ARGS__)\
     };\
-    struct name##_stub_obj { \
+    struct __##name##_stub_obj { \
         struct stub_obj common_data; \
         struct name##_args args[MAX_CALL_ARG_LOGS];\
         return_type (*fake)(FORMAL_ARGS(arg_nr, __VA_ARGS__)); \
@@ -79,7 +79,7 @@ struct stub_obj {
         struct name##_args* pargs = &name##_stub_obj.args[call_times % MAX_CALL_ARG_LOGS]; \
         return VERIFY_ARGS(arg_nr, __VA_ARGS__); \
     } \
-    void name##_set_fake(return_type (*fake)(FORMAL_ARGS(arg_nr, __VA_ARGS__))) \
+    static void name##_set_fake(return_type (*fake)(FORMAL_ARGS(arg_nr, __VA_ARGS__))) \
     { \
         name##_stub_obj.fake = fake; \
     }
