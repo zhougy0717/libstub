@@ -124,7 +124,7 @@ func(1,2) // 4
 func(1,2) // 5 <===== Pass index as 5 to access.
 FETCH_ARG_FROM_CALL(func, 1, 1) // The oldest one
 FETCH_ARG_FROM_CALL(func, 5, 1) // The last one
-FETCH_ARG_FROM_CALL(func, 5, 6) // No error but access to the oldest one. 
+FETCH_ARG_FROM_CALL(func, 6, 1) // No error but access to the oldest one. 
 ```
 
 **VERIFY_POINTER_ARG**
@@ -152,7 +152,7 @@ func(&to_compare);
 VERIFY_POINTER_ARG(&to_compare, func, 1); // Finally a smile face.
 ```
 
-##Extend the arg list
+## Extend the arg list
 
  `libstub` supports to stub function contains up to 6 args. If you want to stub function having even longer arg list. You should be careful here. 
 
